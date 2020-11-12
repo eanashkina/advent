@@ -1,0 +1,1 @@
+tableFromFile: "J"$ "," vs raze read0 `:D:/Coding/advent2019/input7.txt;
