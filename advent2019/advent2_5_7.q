@@ -1,73 +1,76 @@
 system "c 300 300";
 
-tableFromFile: "J"$ "," vs raze read0 `:D:/Coding/advent/advent2019/input2_1.txt;
-//tableFromFile: (1,9,10,3,2,3,11,0,99,30,40,50);
-tableFromFile[1 2]: 12 2;
+//tableFromFile: "J"$ "," vs raze read0 `:D:/Coding/advent/advent2019/input2_1.txt;
+tableFromFile: "J"$ "," vs raze read0 `:D:/Coding/advent/advent2019/input5.txt;
+// 5_1 works, proceed with 5_2
+//tableFromFile: (1002,4,3,4,33);
+//tableFromFile[1 2]: 12 2; // For task 2
 
-runOneInstruction:{[tableFromFile]
+runOneInstruction:{[tableFromFile] // works in 3.6, does not work in 3.5
+    // Tasks 2_1, 2_2, 5_1.
     // show tableFromFile;
     countNum: 0;
+    input: 1;
+    output: 0;
     while[tableFromFile[countNum]<>99;
-        // show countNum;
-        $[tableFromFile[countNum]=1;
-            [tableFromFile[tableFromFile[countNum+3]]: tableFromFile[tableFromFile[countNum+1]]+tableFromFile[tableFromFile[countNum+2]];countNum: countNum+4;tableFromFile];
-            tableFromFile[countNum]=2;
-            [tableFromFile[tableFromFile[countNum+3]]: tableFromFile[tableFromFile[countNum+1]]*tableFromFile[tableFromFile[countNum+2]];countNum: countNum+4;tableFromFile];
-            show "Invalide input"
+        show countNum;
+        instruction: string tableFromFile[countNum];
+        while[5>count instruction; // update if >3 inputs of instructions
+            instruction: "0",instruction
             ];
-    //        show tableFromFile;
-        ];
+        opcode: -2 sublist instruction;
+        modes: 3 sublist instruction; // 3=5-2
+        firstMode: last modes;
+        secondMode: last -1_ modes;
+        thirdMode: last -2_modes;
+        $[all (opcode="1") or (opcode="01") or (opcode="2") or (opcode="02");
+            [
+                valueFirst: $[firstMode="0";tableFromFile[tableFromFile[countNum+1]];firstMode="1";tableFromFile[countNum+1];show "Wrong mode"];
+                valueSecond: $[secondMode="0";tableFromFile[tableFromFile[countNum+2]];secondMode="1";tableFromFile[countNum+2];show "Wrong mode"];
+                $[all (opcode="1") or (opcode="01");valueThird: valueFirst+valueSecond;valueThird: valueFirst*valueSecond];
+                // $[thirdMode="0";tableFromFile[tableFromFile[countNum+3]]: valueThird;thirdMode="1";tableFromFile[tableFromFile[countNum+3]]: valueThird;show "Wrong mode"]
+                tableFromFile[tableFromFile[countNum+3]]: valueThird;
+                countNum: countNum+4
+                ];
+            (all (opcode="3") or (opcode="03"));
+                [
+                    show "Input ", string input;
+                    tableFromFile[tableFromFile[countNum+1]]: input;
+                    countNum: countNum+2
+                    ];
+                (all (opcode="4") or (opcode="04"));
+                    [
+                        show "Output ",string output;
+                        output: tableFromFile[tableFromFile[countNum+1]];
+                        countNum: countNum+2
+                        ];
+                    show "Invalid input ",string  tableFromFile[countNum]
+            ]; //all (opcode="1") or (opcode="01") or (opcode="2") or (opcode="02")
+        // show tableFromFile;
+        ]; //while
     countNum: countNum+1;
-    :tableFromFile[0]
+    :output // tableFromFile[0]
     };
 
 res: runOneInstruction[tableFromFile];
 
 input: ([] noun: til 100) cross ([] verb: til 100);
-inputRow: input[1]
-
-
 checkCombination:{[tableFromFile;inputRow]
-
+    // Task 2.
     tableFromFile[1 2]: value inputRow;
     res: runOneInstruction[tableFromFile];
     if[res=19690720;
-//        show
         :(100*inputRow[`noun])+inputRow[`verb];
         :()
         ];
     };
 
-a: raze checkCombination[tableFromFile;] each input;
+totalRes: raze checkCombination[tableFromFile;] each input;
 
 
-    if[whatToDo=2;
-        $[mode1=1;
-            value1: tableFromFile[countNum+1];
-            value1: tableFromFile[tableFromFile[countNum+1]]
-            ];
-        $[mode2=1;
-            value2: tableFromFile[countNum+2];
-            value2: tableFromFile[tableFromFile[countNum+2]]
-            ];
-        position3: tableFromFile[countNum+3];
-        tableFromFile[position3]: value1*value2;
-        countNum: countNum+4;
-        ];
-    if[whatToDo=3;
-        position: tableFromFile[countNum+1];
-        tableFromFile[position]: first inputNum;
-        if[1<count inputNum;inputNum: 1_inputNum];
-        countNum: countNum+2;
-        ];
-    if[whatToDo=4;
-        $[mode1=1;
-            valueNum: tableFromFile[countNum+1];
-            valueNum: tableFromFile[tableFromFile[countNum+1]];
-            ];
-        outputNum: valueNum;
-        countNum: countNum+2;
-        ];
+
+
+
     if[whatToDo=5;
         $[mode1=1;
             checkValue: tableFromFile[countNum+1];
@@ -133,7 +136,7 @@ a: raze checkCombination[tableFromFile;] each input;
         countNum: countNum+4;
         ];
     :`table`countNum`inputNum`outputNum!(tableFromFile;countNum;inputNum;outputNum)
-    };
+
 
 
 
