@@ -1,4 +1,4 @@
-tableFromFile: `orbit xcol ([] read0 `:D:/Coding/advent2019/input6.txt);
+tableFromFile: `orbit xcol ([] read0 `:D:/Coding/advent/advent2019/input6.txt);
 // tableFromFile: `orbit xcol ([] ("COM)B";"B)C";"C)D";"D)E";"E)F";"B)G";"G)H";"D)I";"E)J";"J)K";"K)L"));
 
 // tableFromFile: `orbit xcol ([] ("COM)B";"B)C";"C)D";"D)E"));
@@ -28,7 +28,7 @@ resTotalDistinct: select sum countNum from distinct resTotal;
 fromYou: findWayToCentre[`YOU;tableFromFile];
 fromSan: findWayToCentre[`SAN;tableFromFile];
 
-fromYouSan: select count i, first countNum by listOfPlanets from fromYou,fromSan;
+fromYouSan: select count i, first countNum by listOfPlanets from fromYou, fromSan;
 
 divergePlanet: exec last listOfPlanets from 0!`countNum xasc select from fromYouSan where x=2;
 fromDiv: findWayToCentre[divergePlanet;tableFromFile];
