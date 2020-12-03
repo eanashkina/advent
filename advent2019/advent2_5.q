@@ -7,13 +7,13 @@ tableFromFile: "J"$ "," vs raze read0 `:D:/Coding/advent/advent2019/input5.txt;
 //tableFromFile[1 2]: 12 2; // For task 2
 
 system "l D:/Coding/advent/advent2019/intcode_comp.q";
-res: runOneInstruction[tableFromFile];
+res: runOneInstruction[1;tableFromFile];
 
 input: ([] noun: til 100) cross ([] verb: til 100);
 checkCombination:{[tableFromFile;inputRow]
     // Task 2.
     tableFromFile[1 2]: value inputRow;
-    res: runOneInstruction[tableFromFile];
+    res: runOneInstruction[0;tableFromFile];
     if[res=19690720;
         :(100*inputRow[`noun])+inputRow[`verb];
         :()
