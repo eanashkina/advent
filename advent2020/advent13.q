@@ -1,5 +1,6 @@
 system "c 300 300";
-initialTable: ([] read0 `:D:/Coding/advent/advent2020/input13_1.txt);
+// initialTable: ([] read0 `:D:/Coding/advent/advent2020/input13_1.txt);
+initialTable: ([] read0 `:C:/Users/anash/MyPC/Coding/advent/advent2020/input13_1.txt);
 targetTimestamp: "J"$exec x from initialTable[0];
 buses: "," vs exec x from initialTable[1];
 busesNum: "J"$buses where not buses like "*x*";
