@@ -54,82 +54,45 @@ while[targetTurn<=turnsTotal;
 show last newTable // 694
 
 // Part 2
-initialTable: ([] number: 17 1 3 16 19 0);
-//initialTable: ([] number: 0 3 6);
+turnsTotal: 30000000;
+//turnsTotal: 2020;
+//turnsTotal: 11;
 
-turnsTotal: 30000000-1;
-//turnsTotal: 2019;
-//turnsTotal: 16;
-testTable: ([] num: til 5; lastSeen: 0N; prevSeen: 0N);
-//
-//100#testTable
-targetTurn: 0;
-thisNum: 0N;
+initialList: 17 1 3 16 19 0;
+// initialList: 0 3 6;
+
+lastPos: turnsTotal#0;
+prevPos: turnsTotal#0;
+targetTurn: 1+count initialList;
+
+lastPos[initialList]: 1+til count initialList;
+prevPos[initialList]: 1+til count initialList;
+thisNum: last initialList;
 
 while[targetTurn<=turnsTotal;
      if[(targetTurn-(10000*(targetTurn div 10000)))=0;
-        show "The number of the response ",string targetTurn+1;
+        show "The number of the response ",string targetTurn;
          ];
-    $[targetTurn<count initialTable;
+    $[not lastPos[thisNum]=0;
         [
-            show "This is initial table.";
-            thisNum: initialTable[`number][targetTurn];
+            // show "We have seen this number ",string thisNum;
+            newNum: lastPos[thisNum]-prevPos[thisNum];
 
-            $[not thisNum in exec num from testTable;
-                [
-                    // show string[thisNum]," is outside the table";
-                    testTable: testTable, ([] num: enlist thisNum; lastSeen: targetTurn; prevSeen: 0N);
-                    ];
-                [
-                    // show string[thisNum]," is inside the table";
-                    testTable: update lastSeen: targetTurn from testTable where num=thisNum;
-                    ]
-                ];
+            prevPos[newNum]: $[lastPos[newNum]=0;targetTurn;lastPos[newNum]];
+            lastPos[newNum]: targetTurn;
             ];
         [
-            // The numbers in the initial list are not repeated (in my case).
-            // show "Last number ",string thisNum;
-            // if[
-            //     'string[thisNum]," is outside the table"
-            //     ];
-            lastSeenNum: first exec lastSeen from testTable where num=thisNum;
-            lastSeenPrev: first exec prevSeen from testTable where num=thisNum;
-            $[not null lastSeenPrev;
-                [
-                    // show "We have seen this number ",string thisNum;
-                    newNum: lastSeenNum-lastSeenPrev;
-                    $[not newNum in exec num from testTable;
-                        [
-                            // show string[newNum]," is outside the table";
-                            testTable: testTable, ([] num: enlist newNum; lastSeen: targetTurn; prevSeen: 0N);
-                            ];
-                        [
-                            // show string[newNum]," is inside the table";
-                            testTable: update prevSeen: lastSeen, lastSeen: targetTurn from testTable where num=newNum;
-                            ]
-                        ];
-
-                    ];
-                [
-                    // show "Number not seen before ",string thisNum;
-                    newNum: 0;
-                    testTable: update prevSeen: lastSeen, lastSeen: targetTurn from testTable where num=newNum;
-                    ]
-                ];
-            thisNum: newNum;
+            // show "Number not seen before ",string thisNum;
+            newNum: 0;
+            prevPos[newNum]: targetTurn;
+            lastPos[newNum]: targetTurn;
             ]
         ];
+    thisNum: newNum;
+    // show thisNum;
+    // show prevPos;
+    // show lastPos;
     targetTurn: targetTurn+1;
     ];
 
 thisNum
-
-
-// Numbers after 14756 are seen occasionally - instead of preparing large table, add them if they are found
-
-// 100540 - after 100,000 iterations 1554j	104556j	4016j
-// 200268 - after  200,000 iterations 5365j	206885j	6617j
-
-// 3 sec - 10,000
-30,000,000%10,000 = 3000 sec = 50 min
-150 min
