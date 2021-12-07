@@ -93,6 +93,7 @@ ox: first exec x from finalLineOxygen;
 (2 sv "J"$string first exec x from finalLineOxygen)*(2 sv "J"$string first exec x from finalLineCO2)
 
 // 4
+system "c 300 300";
 initialTable: ([] read0 `:C:/Users/anash/MyPC/Coding/advent/advent2021/input4_1.txt);
 nums: "J"$"," vs first exec x from initialTable;
 initialTable: 2_initialTable;
@@ -105,13 +106,122 @@ initialTable: delete from initialTable where isBreak=1;
 //select count i by numTable from initialTable
 
 initialTable: update {x where not null x} each x from initialTable;
-initialTable: update firstCol: 0, secondCol: 0, thirdCol: 0, fourthCol: 0, fifthCol: 0 from initialTable;
+// initialTable: update firstCol: 0, secondCol: 0, thirdCol: 0, fourthCol: 0, fifthCol: 0 from initialTable;
 initialTable: delete isBreak from initialTable;
+initialTable: update numInCol: 0N from initialTable;
 
+//initialTable: select from initialTable where numTable<4;
 
-targetNum: first nums;
+//targetNum: first nums; // 66 39 9 87 85
+targetNum: 66;
+targetNum: 39;
+targetNum: 9;
+targetNum: 87;
+targetNum: 85;
+
 checkOneNum:{[initialTable;targetNum]
-    update isNumInCol: ?[targetNum in x;1b;0b] each x from initialTable
+    show targetNum;
+    // show initialTable;
+    // show cols initialTable;
+    if[not `winnerNum in cols initialTable;
+        // update isNumInCol: targetNum in/:x from initialTable
+        initialTable: update isNumInColNew: ?[;targetNum] each x from initialTable;
+        initialTable: update isNumInColNew: 0Nj from initialTable where isNumInColNew=5;
+        initialTable: update isLineWinner: 0b from update numInCol: (numInCol,'isNumInColNew) from initialTable;
+        checkedTable: checkLines each initialTable;
+        winnerLine: select from checkedTable where isLineWinner=1b;
+        $[0<count winnerLine;
+            [
+                show "The winner is ",string targetNum;
+                :update winnerNum: targetNum from winnerLine
+                ];
+            [
+                numTables: distinct exec numTable from initialTable;
+                initialTable: raze checkTable[initialTable;] each numTables;
+                valuesWinner: count select from initialTable where isLineWinner=1b;
+                // show initialTable;
+                if[0<valuesWinner;
+                    show select from initialTable where isLineWinner=1b;
+                    initialTable: update winnerNum: targetNum from initialTable
+                    ];
+                ]
+            ];
+        ];
+        :initialTable
     };
 
-meta initialTable
+checkOneNumPartTwo:{[initialTable;targetNum]
+    show targetNum;
+     show initialTable;
+    // show cols initialTable;
+
+    initialTable: update isNumInColNew: ?[;targetNum] each x from initialTable;
+    initialTable: update isNumInColNew: 0Nj from initialTable where isNumInColNew=5;
+    initialTable: update isLineWinner: 0b from update numInCol: (numInCol,'isNumInColNew) from initialTable;
+    checkedTable: checkLines each initialTable;
+    winnerLine: select from checkedTable where isLineWinner=1b;
+    $[0<count winnerLine;
+        [
+            tableToDelete: exec numTable from checkedTable where isLineWinner=1b;
+            show tableToDelete;
+            :delete from initialTable where numTable in tableToDelete
+            ];
+        [
+            numTables: distinct exec numTable from initialTable;
+            initialTable: raze checkTable[initialTable;] each numTables;
+            :delete from initialTable where isLineWinner=1b;
+            ]
+        ];
+    };
+
+//nums: 66 39 9 87 85;
+res: initialTable checkOneNumPartTwo/ nums;
+
+tableToDelete: 10
+
+//row: first initialTable
+checkLines:{[row]
+    // show "CheckLines";
+    values: asc distinct exec numInCol from row;
+    values: values where not null values;
+    if[5=(count values);row: update isLineWinner: 1b from row];
+    :row
+    };
+
+//checkTable[initialTable;2]
+//numTableTarget: 2
+checkTable:{[initialTable;numTableTarget]
+    // show "Check table";
+    selectedTable: select from initialTable where numTable=numTableTarget;
+    // show selectedTable;
+    values: raze exec numInCol from selectedTable;
+    values: values where not null values;
+    if[0<count values;
+        $[5=first desc count each group values;
+            [
+                :update isLineWinner: 1b from selectedTable where numTable=numTableTarget
+                ];
+            [
+                :selectedTable
+                ]
+            ];
+        ];
+    :selectedTable
+    };
+
+winnerNumTarget: first exec winnerNum from res;
+calledNums: nums[til 1+ nums?winnerNumTarget];
+
+
+
+boardNums: raze exec x from initialTable where numTable=(first exec numTable from res);
+
+boardNums: raze exec x from res where isLineWinner=1;
+
+(sum boardNums where not boardNums in calledNums)*winnerNumTarget // 34506
+
+
+calledNums: nums[til 1+ nums?42];
+boardNums: raze exec x from initialTable where numTable=58;
+(sum boardNums where not boardNums in calledNums)*42 // 7686
+
